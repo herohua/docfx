@@ -1,0 +1,234 @@
+{{! -------Start Template for Namespace--------}}
+{{#namespace}}
+# {{type}} {{name}}
+{{#summary}}---{{/summary}}
+{{{summary}}}
+{{#remarks}}---{{/remarks}}
+{{{remarks}}}
+{{#children}}
+  {{#Class.0}}
+###Classes
+Name|Description
+----|----
+  {{/Class.0}}
+  {{#Class}}
+    {{#href}}[{{name}}]({{href}}){{/href}}{{^href}}{{name}}{{/href}}|{{{summary}}}
+  {{/Class}}
+  {{#Struct.0}}
+###Structs
+Name|Description
+----|----
+  {{/Struct.0}}
+  {{#Struct}}
+    {{#href}}[{{name}}]({{href}}){{/href}}{{^href}}{{name}}{{/href}}|{{{summary}}}
+  {{/Struct}}
+  {{#Interface.0}}
+###Interfaces
+Name|Description
+----|----
+  {{/Interface.0}}
+  {{#Interface}}
+    {{#href}}[{{name}}]({{href}}){{/href}}{{^href}}{{name}}{{/href}}|{{{summary}}}
+  {{/Interface}}
+  {{#Enum.0}}
+###Enums
+Name|Description
+----|----
+  {{/Enum.0}}
+  {{#Enum}}
+    {{#href}}[{{name}}]({{href}}){{/href}}{{^href}}{{name}}{{/href}}|{{{summary}}}
+  {{/Enum}}
+  {{#Delegate.0}}
+###Delegates
+Name|Description
+----|----
+  {{/Delegate.0}}
+  {{#Delegate}}
+    {{#href}}[{{name}}]({{href}}){{/href}}{{^href}}{{name}}{{/href}}|{{{summary}}}
+  {{/Delegate}}
+{{/children}}
+{{/namespace}}
+{{! -------End Template for Namespace--------}}
+{{! -------Start Template for Class--------}}
+{{#class}}
+# {{type}} {{name}}
+{{#summary}}---{{/summary}}
+{{{summary}}}
+{{#remarks}}---{{/remarks}}
+{{{remarks}}}
+{{#inheritance.0}}
+<div class="inheritance">
+  <h5>Inheritance</h5>
+  {{#inheritance}}
+  <div class="level{{index}}">{{name}}
+  </div>
+  {{/inheritance}}
+  <div class="level{{level}}">{{class.name}}</div>
+</div>
+{{/inheritance.0}}
+
+**Namespace**:{{{namespace}}}
+
+**Assembly**:{{{assemblies}}}
+
+#####Syntax
+
+```csharp
+{{{syntax.content}}}
+```
+
+  {{#children}}
+    {{#Constructor.0}}
+###Constructors
+    {{/Constructor.0}}
+    {{#Constructor}}
+####{{name}}
+{{{summary}}}
+{{{remarks}}}
+#####Declaration
+      {{#syntax}}
+
+```csharp
+{{{content}}}
+```
+        {{#parameters.0}}
+#####Parameters
+Type|Name|Description
+----|----|----
+        {{/parameters.0}}
+        {{#parameters}}
+{{type}}|*{{&id}}*|{{{description}}}
+        {{/parameters}}
+      {{/syntax}}
+    {{/Constructor}}
+
+    {{#Field.0}}
+###Fields
+    {{/Field.0}}
+    {{#Field}}
+####{{name}}
+{{{summary}}}
+{{{remarks}}}
+#####Declaration
+
+      {{#syntax}}
+
+```csharp
+{{{content}}}
+```
+      {{/syntax}}
+
+    {{/Field}}
+
+    {{#Property.0}}
+###Properties
+    {{/Property.0}}
+    {{#Property}}
+####{{name}}
+{{{summary}}}
+{{{remarks}}}
+#####Declaration
+
+{{#syntax}}
+
+```csharp
+{{{content}}}
+```
+        {{#parameters.0}}
+#####Property Value
+Type|Description
+----|----
+        {{/parameters.0}}
+        {{#parameters}}
+{{type}}|{{{description}}}
+        {{/parameters}}
+      {{/syntax}}
+
+    {{/Property}}
+
+    {{#Method.0}}
+###Methods
+    {{/Method.0}}
+    {{#Method}}
+####{{name}}
+{{{summary}}}
+{{{remarks}}}
+#####Declaration
+
+      {{#syntax}}
+
+```csharp
+{{{content}}}
+```
+        {{#parameters.0}}
+#####Parameters
+Type|Name|Description
+----|----|---
+        {{/parameters.0}}
+        {{#parameters}}
+{{type}}|*{{&id}}*|{{{description}}}
+        {{/parameters}}
+
+        {{#return}}
+#####Returns
+Type|Description
+----|----
+{{type}}|{{{description}}}
+        {{/return}}
+      {{/syntax}}
+
+    {{/Method}}
+    {{#Event.0}}
+###Events
+    {{/Event.0}}
+    {{#Event}}
+####{{name}}
+{{{summary}}}
+{{{remarks}}}
+#####Declaration
+
+      {{#syntax}}
+
+```csharp
+{{{content}}}
+```
+      {{/syntax}}
+
+    {{/Event}}
+
+    {{#Operator.0}}
+###Methods
+    {{/Operator.0}}
+    {{#Operator}}
+####{{name}}
+{{{summary}}}
+{{{remarks}}}
+#####Operators
+
+      {{#syntax}}
+
+```csharp
+{{{content}}}
+```
+        {{#parameters.0}}
+#####Parameters
+Type|Name|Description
+----|----|---
+        {{/parameters.0}}
+        {{#parameters}}
+{{type}}|{{&id}}|{{{description}}}
+        {{/parameters}}
+
+        {{#return}}
+#####Returns
+Type|Description
+----|----
+{{type}}|{{{description}}}
+        {{/return}}
+      {{/syntax}}
+
+    {{/Operator}}
+
+{{/children}}
+{{/class}}
+{{! -------End Template for Class--------}}

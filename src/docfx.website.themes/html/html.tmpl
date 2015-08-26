@@ -1,0 +1,561 @@
+{{!include(fonts/glyphicons-halflings-regular.eot)}}
+{{!include(fonts/glyphicons-halflings-regular.svg)}}
+{{!include(fonts/glyphicons-halflings-regular.ttf)}}
+{{!include(fonts/glyphicons-halflings-regular.woff)}}
+{{!include(fonts/glyphicons-halflings-regular.woff2)}}
+{{!include(vendor/bootstrap.min.css)}}
+{{!include(vendor/solarized_dark.css)}}
+{{!include(vendor/handlebars.js)}}
+{{!include(vendor/js.cookie.js)}}
+{{!include(vendor/marked.min.js)}}
+{{!include(vendor/highlight.pack.js)}}
+{{!include(styles/main.css)}}
+{{!include(styles/main.js)}}
+{{!include(favicon.ico)}}
+{{#isToc}}
+<ul>
+  {{#toc}}
+  <li>{{{name}}}
+  {{#items.0}}
+  <ul>
+  {{/items.0}}
+  {{#items}}
+      <li>{{{name}}}</li>
+  {{/items}}
+  {{#items.0}}
+  </ul>
+  {{/items.0}}
+  </li>
+  {{/toc}}
+</ul>
+{{/isToc}}
+{{#item}}
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>{{_pageTitle}} | {{_title}}</title>
+        <meta name="viewport" content="width=device-width">
+        <meta name="title" content="{{_pageTitle}} | {{_title}}">
+        {{#_description}}<meta name="description" content="{{_description}}">{{/_description}}
+        <link rel="shortcut icon" href="{{_rel}}/favicon.ico">
+        <link rel="stylesheet" href="{{_rel}}/vendor/bootstrap.min.css">
+        <link rel="stylesheet" href="{{_rel}}/vendor/solarized_dark.css">
+        <link rel="stylesheet" href="{{_rel}}/styles/main.css">
+        <meta property="docfx:appName" content="{{_appName}}">
+        <meta property="docfx:tocTitle" content="{{_tocTitle}}">
+        <meta property="docfx:toc" content="{{_tocPath}}">
+        <meta property="docfx:nav" content="{{_navPath}}">
+        <meta property="docfx:rel" content="{{_rel}}">
+        <meta property="docfx:tocrel" content="{{_tocRel}}">
+        <meta property="docfx:navrel" content="{{_navRel}}">
+    </head>
+
+    <body data-spy="scroll" data-target="#affix">
+        <div class="container">
+            <div id="_header">
+              <nav id="header" role="navigation">
+                <ul id="nav_main" class="menu navbar_opaque navbar navbar-default navbar-fixed-top dropdown-menu-right">
+                  <li class="toc_folded">
+                    <span class="glyphicon glyphicon-list"></span>
+                  </li>
+                  <li class="article_btn dropdown">
+                    <a class="navbar-brand" href="#">
+                      <img src="{{_rel}}/favicon.ico" alt="{{_title}}">
+                    </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                      <span id="nav_title">{{_appName}}</span>
+                      <span class="glyphicon glyphicon-chevron-up"></span>
+                      <span class="glyphicon glyphicon-chevron-down"></span>
+                    </a>
+                    <div class="dropdown-menu">
+                    </div>
+                  </li>
+                  <li class="search_btn input-group">
+                    <span class="glyphicon glyphicon-search" aria-label="Search" id="searchinput"></span>
+                    <input class="collapse" placeHolder="Search" aria-describedby="searchinput"></input>
+                  </li>
+                  <li class="lang_btn dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">EN</a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li><a href="#">EN</a></li>
+                      <li><a href="#">ZH</a></li>
+                    </ul>
+                  </li>
+                  <li class="share_btn dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                      <span class="glyphicon glyphicon-share" aria-label="Search"></span></a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li><a href="#">facebook</a></li>
+                      <li><a href="#">twitter</a></li>
+                      <li><a href="#">email</a></li>
+                    </ul>
+                  </li>
+                  <li class="setting_btn dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                      <span class="glyphicon glyphicon-cog" aria-label="Search"></span></a>
+                    <div class="dropdown-menu dropdown-menu-right" data-stopPropagation>
+                      <div id="toggle-theme" class="btn-group btn-group-justified" data-toggle="buttons">
+                        <label class="btn btn-radio active">
+                          <input type="radio" name="options" autocomplete="off" checked>Rich</label>
+                        </label>
+                        <label class="btn btn-radio">
+                          <input type="radio" name="options" autocomplete="off">Minimal</label>
+                        </label>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </nav>
+              <div id="toc_wrapper">
+                <div id="toc_swipe"></div>
+                <div id="toc_btn">
+                  <span>{{_tocTitle}}</span>
+                  <span class="glyphicon glyphicon-align-justify"></span>
+                </div>
+                <aside tabindex="0">
+                </aside>
+              </div>
+            </div>
+            <div id="content">
+                <div class="row">
+                    <div class="col-md-9">
+                        <article class="content wrap" id="_content">
+<div id="breadcrumb"><ul class="breadcrumb"><li>{{_tocTitle}}</li></ul></div>
+
+{{! -------Start Template for Namespace--------}}
+{{#isNamespace}}
+  {{#docurl}}<a href="{{docurl}}" class="btn btn-primary pull-right mobile-hide">
+    <!--<span class="glyphicon glyphicon-edit">&nbsp;</span>-->Improve this Doc
+  </a>{{/docurl}}
+  {{#sourceurl}}
+  <a href="{{sourceurl}}" class="btn btn-primary pull-right mobile-hide">
+    <!--<span class="glyphicon glyphicon-eye-open">&nbsp;</span>-->View Source
+  </a>{{/sourceurl}}
+<h1 id="{{id}}">Namespace{{type}} {{{name}}}
+</h1>
+<div class="markdown level0 summary">{{{summary}}}</div>
+<div class="markdown level0 remarks">{{{remarks}}}</div>
+{{#children}}
+  {{#Class.0}}
+<h3 id="classes">Classes</h3>
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+  {{/Class.0}}
+  {{#Class}}
+            <tr>
+                <td>{{{name}}}</td>
+                <td>{{{summary}}}</td>
+            </tr>
+  {{/Class}}
+  {{#Class.0}}
+      </tbody>
+    </table>
+  {{/Class.0}}
+  {{#Struct.0}}
+<h3 id="structs">Structs</h3>
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+  {{/Struct.0}}
+  {{#Struct}}
+            <tr>
+                <td>{{{name}}}</td>
+                <td>{{{summary}}}</td>
+            </tr>
+  {{/Struct}}
+  {{#Struct.0}}
+      </tbody>
+    </table>
+  {{/Struct.0}}
+  {{#Interface.0}}
+<h3 id="interfaces">Interfaces</h3>
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+  {{/Interface.0}}
+  {{#Interface}}
+            <tr>
+                <td>{{{name}}}</td>
+                <td>{{{summary}}}</td>
+            </tr>
+  {{/Interface}}
+  {{#Interface.0}}
+      </tbody>
+    </table>
+  {{/Interface.0}}
+  {{#Enum.0}}
+<h3 id="enums">Enums</h3>
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+  {{/Enum.0}}
+  {{#Enum}}
+            <tr>
+                <td>{{{name}}}</td>
+                <td>{{{summary}}}</td>
+            </tr>
+  {{/Enum}}
+  {{#Enum.0}}
+      </tbody>
+    </table>
+  {{/Enum.0}}
+  {{#Delegate.0}}
+<h3 id="delegates">Delegates</h3>
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+  {{/Delegate.0}}
+  {{#Delegate}}
+            <tr>
+                <td>{{{name}}}</td>
+                <td>{{{summary}}}</td>
+            </tr>
+  {{/Delegate}}
+  {{#Delegate.0}}
+      </tbody>
+    </table>
+  {{/Delegate.0}}
+{{/children}}
+{{/isNamespace}}
+{{! -------End Template for Namespace--------}}
+{{! -------Start Template for Class--------}}
+{{#isClass}}
+  {{#docurl}}<a href="{{docurl}}" class="btn btn-primary pull-right mobile-hide">
+    <!--<span class="glyphicon glyphicon-edit">&nbsp;</span>-->Improve this Doc
+  </a>{{/docurl}}
+  {{#sourceurl}}
+  <a href="{{sourceurl}}" class="btn btn-primary pull-right mobile-hide">
+    <!--<span class="glyphicon glyphicon-eye-open">&nbsp;</span>-->View Source
+  </a>{{/sourceurl}}
+<h1 id="{{id}}">{{type}} {{{name}}}
+</h1>
+<div class="markdown level0 summary">{{{summary}}}</div>
+<div class="markdown level0 remarks">{{{remarks}}}</div>
+{{#inheritance.0}}
+<div class="inheritance">
+  <h5>Inheritance</h5>
+  {{#inheritance}}
+  <div class="level{{index}}">{{{name}}}</div>
+  {{/inheritance}}
+  <div class="level{{item.level}}">{{{item.name}}}</div>
+</div>
+{{/inheritance.0}}
+<h6><strong>Namespace</strong>:{{{namespace}}}</h6>
+<h6><strong>Assembly</strong>:{{{assemblies}}}</h6>
+
+<h5 id="{{id}}_syntax">Syntax</h5>
+
+<div class="codewrapper"><pre><code class="lang-{{_lang}} hljs">{{{syntax.content}}}</code></pre></div>
+  {{#children}}
+    {{#Constructor.0}}
+<h3 id="constructors">Constructors</h3>
+    {{/Constructor.0}}
+    {{#Constructor}}
+<h4 id="{{id}}">{{{name}}}</h4>
+{{#docurl}}<span class="small pull-right mobile-hide"><span class="divider">|</span><a href="{{docurl}}">
+  <!--<span class="glyphicon glyphicon-edit">&nbsp;</span>-->Improve this Doc
+</a></span>{{/docurl}}
+{{#sourceurl}}
+<span class="small pull-right mobile-hide"><a href="{{sourceurl}}">
+  <!--<span class="glyphicon glyphicon-eye-open">&nbsp;</span>-->View Source
+</a></span>{{/sourceurl}}
+<div class="markdown level1 summary">{{{summary}}}</div>
+<div class="markdown level1 remarks">{{{remarks}}}</div>
+<h5 class="decalaration">Declaration</h5>
+      {{#syntax}}
+<div class="codewrapper"><pre><code class="lang-{{_lang}} hljs">{{{syntax.content}}}</code></pre></div>
+        {{#parameters.0}}
+<h5 class="parameters">Parameters</h5>
+
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{/parameters.0}}
+        {{#parameters}}
+            <tr>
+                <td>{{{type.name}}}</td>
+                <td><em>{{{id}}}</em></td>
+                <td>{{{description}}}</td>
+            </tr>
+        {{/parameters}}
+        {{#parameters.0}}
+        </tbody>
+    </table>
+        {{/parameters.0}}
+      {{/syntax}}
+    {{/Constructor}}
+
+    {{#Field.0}}
+<h3 id="fields">Fields</h3>
+    {{/Field.0}}
+    {{#Field}}
+<h4 id="{{id}}">{{{name}}}</h4>
+{{#docurl}}<span class="small pull-right mobile-hide"><span class="divider">|</span><a href="{{docurl}}">
+  <!--<span class="glyphicon glyphicon-edit">&nbsp;</span>-->Improve this Doc
+</a></span>{{/docurl}}
+{{#sourceurl}}
+<span class="small pull-right mobile-hide"><a href="{{sourceurl}}">
+  <!--<span class="glyphicon glyphicon-eye-open">&nbsp;</span>-->View Source
+</a></span>{{/sourceurl}}
+<div class="markdown level1 summary">{{{summary}}}</div>
+<div class="markdown level1 remarks">{{{remarks}}}</div>
+<h5 class="decalaration">Declaration</h5>
+      {{#syntax}}
+<div class="codewrapper"><pre><code class="lang-{{_lang}} hljs">{{{syntax.content}}}</code></pre></div>
+      {{/syntax}}
+    {{/Field}}
+    {{#Property.0}}
+<h3 id="properties">Properties</h3>
+    {{/Property.0}}
+    {{#Property}}
+<h4 id="{{id}}">{{{name}}}</h4>
+{{#docurl}}<span class="small pull-right mobile-hide"><span class="divider">|</span><a href="{{docurl}}">
+  <!--<span class="glyphicon glyphicon-edit">&nbsp;</span>-->Improve this Doc
+</a></span>{{/docurl}}
+{{#sourceurl}}
+<span class="small pull-right mobile-hide"><a href="{{sourceurl}}">
+  <!--<span class="glyphicon glyphicon-eye-open">&nbsp;</span>-->View Source
+</a></span>{{/sourceurl}}
+<div class="markdown level1 summary">{{{summary}}}</div>
+<div class="markdown level1 remarks">{{{remarks}}}</div>
+<h5 class="decalaration">Declaration</h5>
+      {{#syntax}}
+<div class="codewrapper"><pre><code class="lang-{{_lang}} hljs">{{{syntax.content}}}</code></pre></div>
+        {{#parameters.0}}
+<h5 class="parameters">Property Value</h5>
+
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{/parameters.0}}
+        {{#parameters}}
+            <tr>
+                <td>{{{type.name}}}</td>
+                <td>{{{description}}}</td>
+            </tr>
+        {{/parameters}}
+        {{#parameters.0}}
+        </tbody>
+    </table>
+        {{/parameters.0}}
+      {{/syntax}}
+
+    {{/Property}}
+
+    {{#Method.0}}
+<h3 id="methods">Methods</h3>
+    {{/Method.0}}
+    {{#Method}}
+<h4 id="{{id}}">{{{name}}}</h4>
+{{#docurl}}<span class="small pull-right mobile-hide"><span class="divider">|</span><a href="{{docurl}}">
+  <!--<span class="glyphicon glyphicon-edit">&nbsp;</span>-->Improve this Doc
+</a></span>{{/docurl}}
+{{#sourceurl}}
+<span class="small pull-right mobile-hide"><a href="{{sourceurl}}">
+  <!--<span class="glyphicon glyphicon-eye-open">&nbsp;</span>-->View Source
+</a></span>{{/sourceurl}}
+<div class="markdown level1 summary">{{{summary}}}</div>
+<div class="markdown level1 remarks">{{{remarks}}}</div>
+<h5 class="decalaration">Declaration</h5>
+      {{#syntax}}
+<div class="codewrapper"><pre><code class="lang-{{_lang}} hljs">{{{syntax.content}}}</code></pre></div>
+        {{#parameters.0}}
+<h5 class="parameters">Parameters</h5>
+
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{/parameters.0}}
+        {{#parameters}}
+            <tr>
+                <td>{{{type.name}}}</td>
+                <td><em>{{{id}}}</em></td>
+                <td>{{{description}}}</td>
+            </tr>
+        {{/parameters}}
+        {{#parameters.0}}
+        </tbody>
+    </table>
+        {{/parameters.0}}
+
+        {{#return}}
+<h5 class="returns">Returns</h5>
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{{type.name}}}</td>
+                <td>{{{description}}}</td>
+            </tr>
+        </tbody>
+    </table>
+        {{/return}}
+      {{/syntax}}
+
+    {{/Method}}
+    {{#Event.0}}
+<h3 id="events">Events</h3>
+    {{/Event.0}}
+    {{#Event}}
+<h4 id="{{id}}">{{{name}}}</h4>
+{{#docurl}}<span class="small pull-right mobile-hide"><span class="divider">|</span><a href="{{docurl}}">
+  <!--<span class="glyphicon glyphicon-edit">&nbsp;</span>-->Improve this Doc
+</a></span>{{/docurl}}
+{{#sourceurl}}
+<span class="small pull-right mobile-hide"><a href="{{sourceurl}}">
+  <!--<span class="glyphicon glyphicon-eye-open">&nbsp;</span>-->View Source
+</a></span>{{/sourceurl}}
+<div class="markdown level1 summary">{{{summary}}}</div>
+<div class="markdown level1 remarks">{{{remarks}}}</div>
+<h5 class="decalaration">Declaration</h5>
+      {{#syntax}}
+<div class="codewrapper"><pre><code class="lang-{{_lang}} hljs">{{{syntax.content}}}</code></pre></div>
+      {{/syntax}}
+
+    {{/Event}}
+
+    {{#Operator.0}}
+<h3 id="operators">Operators</h3>
+    {{/Operator.0}}
+    {{#Operator}}
+<h4 id="{{id}}">{{{name}}}</h4>
+{{#docurl}}<span class="small pull-right mobile-hide"><span class="divider">|</span><a href="{{docurl}}">
+  <!--<span class="glyphicon glyphicon-edit">&nbsp;</span>-->Improve this Doc
+</a></span>{{/docurl}}
+{{#sourceurl}}
+<span class="small pull-right mobile-hide"><a href="{{sourceurl}}">
+  <!--<span class="glyphicon glyphicon-eye-open">&nbsp;</span>-->View Source
+</a></span>{{/sourceurl}}
+<div class="markdown level1 summary">{{{summary}}}</div>
+<div class="markdown level1 remarks">{{{remarks}}}</div>
+<h5 class="decalaration">Declaration</h5>
+      {{#syntax}}
+<div class="codewrapper"><pre><code class="lang-{{_lang}} hljs">{{{syntax.content}}}</code></pre></div>
+        {{#parameters.0}}
+<h5 class="parameters">Parameters</h5>
+
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{/parameters.0}}
+        {{#parameters}}
+            <tr>
+                <td>{{{type.name}}}</td>
+                <td><em>{{{id}}}</em></td>
+                <td>{{{description}}}</td>
+            </tr>
+        {{/parameters}}
+        {{#parameters.0}}
+        </tbody>
+    </table>
+        {{/parameters.0}}
+
+        {{#return}}
+<h5 class="returns">Returns</h5>
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{{type.name}}}</td>
+                <td>{{{description}}}</td>
+            </tr>
+        </tbody>
+    </table>
+        {{/return}}
+      {{/syntax}}
+    {{/Operator}}
+{{/children}}
+{{/isClass}}
+{{! -------End Template for Class--------}}
+</article>
+                        <footer class="content_footer" id="_footer">
+                        <p class="text-center small">
+                            This documentation is generated by <a href="https://github.com/aspnet/docfx">docfx</a>.
+                        </p>
+                        <p class="text-uppercase text-center small">
+                            &copy; 2014&ndash;2015 Microsoft DocAsCode.
+                            <br> Documentation licensed under <a href="https://github.com/aspnet/docfx/blob/dev/LICENSE">MIT</a>.
+                        </p>
+                        </footer>
+                    </div>
+                    <div class="col-md-3" role="complementary">
+                        <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                            <strong class="title">In This Article</strong>
+                            <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.5/bootstrap.min.js"></script>
+        <script type="text/javascript" src="{{_rel}}/vendor/handlebars.js"></script>
+        <script type="text/javascript" src="{{_rel}}/vendor/marked.min.js"></script>
+        <script type="text/javascript" src="{{_rel}}/vendor/highlight.pack.js"></script>
+        <script type="text/javascript" src="{{_rel}}/vendor/js.cookie.js"></script>
+        <script type="text/javascript" src="{{_rel}}/styles/main.js"></script>
+    </body>
+</html>
+{{/item}}
