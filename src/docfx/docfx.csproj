@@ -163,6 +163,10 @@
       <!-- Default behavior of embedded resource name is DefaultNamespace.ExtendedNamespace.FileName, which is inconsistent with DNX version -->
       <LogicalName>$(AssemblyName).Template.vs.html.zip</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Template\docs.liquid.zip">
+      <!-- Default behavior of embedded resource name is DefaultNamespace.ExtendedNamespace.FileName, which is inconsistent with DNX version -->
+      <LogicalName>$(AssemblyName).Template.docs.liquid.zip</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.DocAsCode.EntityModel\Microsoft.DocAsCode.EntityModel.csproj">

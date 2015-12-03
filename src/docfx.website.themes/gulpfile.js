@@ -32,6 +32,11 @@ var pack = {
     "partials/*",
     "*.js",
     "*.tmpl"
+  ],
+  "docs.liquid": [
+    "css/*",
+    "*.js",
+    "*.liquid"
   ]
 };
 
