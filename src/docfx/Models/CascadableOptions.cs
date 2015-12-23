@@ -18,6 +18,9 @@ namespace Microsoft.DocAsCode
         [OptionList("theme", Separator = ',', HelpText = "Specifies which theme to use. By default 'default' theme is offered.")]
         public List<string> Themes { get; set; }
 
+        [OptionList("plugin", Separator = ',', HelpText = "Specifies the plugin folders to use. By default folder with name 'plugin' will be searched")]
+        public List<string> PluginFolders { get; set; }
+
         [Option("raw", HelpText = "Preserve the existing xml comment tags inside 'summary' triple slash comments")]
         public bool PreserveRawInlineComments { get; set; }
 

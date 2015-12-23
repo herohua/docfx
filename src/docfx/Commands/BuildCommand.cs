@@ -12,12 +12,14 @@ namespace Microsoft.DocAsCode
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Plugins;
+    using System.Reflection;
 
     class BuildCommand : ICommand
     {
-        private DocumentBuilder _builder = new DocumentBuilder();
+        private DocumentBuilder _builder;
+        private TemplateManager _templateManager;
         private string _helpMessage = null;
-        public BuildJsonConfig Config { get; }
+        public BuildJsonConfig Config { get; private set; }
 
         public BuildCommand(CommandContext context) : this(new BuildJsonConfig(), context)
         {
@@ -29,7 +31,7 @@ namespace Microsoft.DocAsCode
 
         public BuildCommand(BuildJsonConfig config, CommandContext context)
         {
-            Config = MergeConfig(config, context);
+            InitBuildCommand(config, context);
         }
 
         public BuildCommand(Options options, CommandContext context)
@@ -41,14 +43,65 @@ namespace Microsoft.DocAsCode
             }
             else
             {
-                Config = MergeConfig(GetConfigFromOptions(buildCommandOptions), context);
+                if (!string.IsNullOrWhiteSpace(buildCommandOptions.Log)) Logger.RegisterListener(new ReportLogListener(buildCommandOptions.Log));
+                if (buildCommandOptions.LogLevel.HasValue) Logger.LogLevelThreshold = buildCommandOptions.LogLevel.Value;
+                InitBuildCommand(GetConfigFromOptions(buildCommandOptions), context);
             }
-
-            if (!string.IsNullOrWhiteSpace(buildCommandOptions.Log)) Logger.RegisterListener(new ReportLogListener(buildCommandOptions.Log));
-
-            if (buildCommandOptions.LogLevel.HasValue) Logger.LogLevelThreshold = buildCommandOptions.LogLevel.Value;
         }
 
+        private void InitBuildCommand(BuildJsonConfig config, CommandContext context)
+        {
+            Config = MergeConfig(config, context);
+            SetDefaultConfig();
+
+            var assembly = typeof(Program).Assembly;
+            _templateManager = new TemplateManager(assembly, "Template", Config.Templates, Config.Themes, Config.BaseDirectory);
+           
+            _builder = LoadBuilder(Config);
+            
+        }
+
+        private void SetDefaultConfig()
+        {
+            if (Config.Templates == null || Config.Templates.Count == 0)
+            {
+                Config.Templates = new ListWithStringFallback { Constants.DefaultTemplateName };
+            }
+        }
+
+        private DocumentBuilder LoadBuilder(BuildJsonConfig config)
+        {
+            // 1. If plugin folder is not defined, use plugin defined in template
+            // 1. If plugin folder is defined, use the plugin folder
+            List<Assembly> pluginAssemblies = new List<Assembly> { typeof(DocumentBuilder).Assembly};
+            if (Config.PluginFolders == null || Config.PluginFolders.Count == 0)
+            {
+                pluginAssemblies.AddRange(_templateManager.GetTemplatePlugins());
+            }
+            else
+            {
+                foreach(var folder in Config.PluginFolders)
+                {
+                    var pluginDir = Path.Combine(Config.BaseDirectory, folder);
+                    if (Directory.Exists(pluginDir))
+                    {
+                        foreach (var file in Directory.EnumerateFiles(pluginDir, "*.dll"))
+                        {
+                            try
+                            {
+                                pluginAssemblies.Add(Assembly.LoadFile(file));
+                            }
+                            catch (BadImageFormatException e)
+                            {
+                                Logger.LogWarning($"{file} is not a valid Managed dll, ignored: {e.Message}");
+                            }
+                        }
+                    }
+                }
+            }
+
+            return new DocumentBuilder(pluginAssemblies);
+        }
         public void Exec(RunningContext context)
         {
             if (_helpMessage != null)
@@ -85,19 +138,9 @@ namespace Microsoft.DocAsCode
             }
 
             var documentContext = DocumentBuildContext.DeserializeFrom(parameters.OutputBaseDir);
-            var assembly = typeof(Program).Assembly;
-
-            if (config.Templates == null || config.Templates.Count == 0)
-            {
-                config.Templates = new ListWithStringFallback { Constants.DefaultTemplateName };
-            }
-
             // If RootOutput folder is specified from command line, use it instead of the base directory
             var outputFolder = Path.Combine(config.OutputFolder ?? config.BaseDirectory ?? string.Empty, config.Destination ?? string.Empty);
-            using (var manager = new TemplateManager(assembly, "Template", config.Templates, config.Themes, config.BaseDirectory))
-            {
-                manager.ProcessTemplateAndTheme(documentContext, outputFolder, true);
-            }
+            _templateManager.ProcessTemplateAndTheme(documentContext, outputFolder, true);
 
             // TODO: SEARCH DATA
 
@@ -117,6 +160,8 @@ namespace Microsoft.DocAsCode
                 if (templates != null) config.Templates = new ListWithStringFallback(templates);
                 var themes = context.SharedOptions.Themes;
                 if (themes != null) config.Themes = new ListWithStringFallback(themes);
+                var pluginFolders = context.SharedOptions.PluginFolders;
+                if (pluginFolders != null) config.PluginFolders = new ListWithStringFallback(pluginFolders);
                 config.Force |= context.SharedOptions.ForceRebuild;
                 config.Serve |= context.SharedOptions.Serve;
                 config.Port = context.SharedOptions.Port?.ToString();

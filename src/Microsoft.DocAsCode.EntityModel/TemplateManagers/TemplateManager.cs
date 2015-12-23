@@ -11,7 +11,7 @@ namespace Microsoft.DocAsCode.EntityModel
     using System.Reflection;
     using Utility;
 
-    public class TemplateManager : IDisposable
+    public class TemplateManager
     {
         private const string TemplateEntry = "index.html";
 
@@ -26,29 +26,19 @@ namespace Microsoft.DocAsCode.EntityModel
 ";
 
         public const string DefaultTocEntry = "toc.yml";
-
-        private TemplateProcessor _templateProcessor;
-
-        private ResourceCollection _themeResource = null;
-
+        private List<string> _templates = new List<string>();
+        private List<string> _themes = new List<string>();
+        private ResourceFinder _finder;
         public TemplateManager(Assembly assembly, string rootNamespace, List<string> templates, List<string> themes, string baseDirectory)
         {
-            var resourceFinder = new ResourceFinder(assembly, rootNamespace, baseDirectory);
+            _finder = new ResourceFinder(assembly, rootNamespace, baseDirectory);
             if (templates == null || templates.Count == 0)
             {
                 Logger.Log(LogLevel.Info, "Template is not specified, files will not be transformed.");
             }
             else
             {
-                var templateResources = templates.Select(s => resourceFinder.Find(s)).Where(s => s != null).ToArray();
-                if (templateResources.Length == 0)
-                {
-                    Logger.Log(LogLevel.Warning, $"No template resource found for [{templates.ToDelimitedString()}].");
-                }
-                else
-                {
-                    _templateProcessor = new TemplateProcessor(new CompositeResourceCollectionWithOverridden(templateResources));
-                }
+                _templates = templates;
             }
             
             if (themes == null || themes.Count == 0)
@@ -57,39 +47,53 @@ namespace Microsoft.DocAsCode.EntityModel
             }
             else
             {
-                var themeResources = themes.Select(s => resourceFinder.Find(s)).Where(s => s != null).ToArray();
-                if (themeResources.Length == 0)
+                _themes = themes;
+            }
+        }
+
+        /// <summary>
+        /// Template can contain a set of plugins to define the behavior of how to generate the output YAML data model
+        /// The name of plugin folder is always "plugins"
+        /// </summary>
+        public IEnumerable<Assembly> GetTemplatePlugins()
+        {
+            using (var templateResource = new CompositeResourceCollectionWithOverridden(_templates.Select(s => _finder.Find(s)).Where(s => s != null)))
+            {
+                if (templateResource.IsEmpty)
                 {
-                    Logger.Log(LogLevel.Warning, $"No theme resource found for [{themes.ToDelimitedString()}].");
+                    yield break;
                 }
                 else
                 {
-                    _themeResource = new CompositeResourceCollectionWithOverridden(themeResources);
+                    foreach (var pair in templateResource.GetResourceStreams(@"^fonts/.*\.dll"))
+                    {
+                        using (var stream = pair.Value)
+                        {
+                            using (var memoryStream = new MemoryStream())
+                            {
+                                stream.CopyTo(memoryStream);
+                                Assembly assembly;
+                                try
+                                {
+                                    assembly = Assembly.Load(memoryStream.ToArray());
+                                }
+                                catch (BadImageFormatException e)
+                                {
+                                    Logger.LogWarning($"{pair.Key} is not a valid Managed dll, ignored: {e.Message}");
+                                    continue;
+                                }
+                                yield return assembly;
+                            }
+                        }
+                    }
                 }
             }
         }
 
         public void ProcessTemplateAndTheme(DocumentBuildContext context, string outputDirectory, bool overwrite)
         {
-            if (_templateProcessor != null)
-            {
-                Logger.Log(LogLevel.Verbose, "Template resource found, starting applying template.");
-                _templateProcessor.Process(context, outputDirectory);
-            }
-
-            if (_themeResource != null)
-            {
-                Logger.Log(LogLevel.Verbose, "Theme resource found, starting copying theme.");
-                foreach (var resourceName in _themeResource.Names)
-                {
-                    using (var stream = _themeResource.GetResourceStream(resourceName))
-                    {
-                        var outputPath = Path.Combine(outputDirectory, resourceName);
-                        CopyResource(stream, outputPath, overwrite);
-                        Logger.Log(LogLevel.Info, $"Theme resource {resourceName} copied to {outputPath}.");
-                    }
-                }
-            }
+            ProcessTemplate(context, outputDirectory);
+            ProcessTheme(outputDirectory, overwrite);
         }
 
         public static void GenerateDefaultToc(IEnumerable<string> apiFolder, IEnumerable<string> conceptualFolder, string outputFolder, bool overwrite)
@@ -116,6 +120,51 @@ namespace Microsoft.DocAsCode.EntityModel
                     Logger.Log(LogLevel.Info, message);
                 }
             }, targetTocPath, overwrite);
+        }
+
+        private void ProcessTemplate(DocumentBuildContext context, string outputDirectory)
+        {
+            using (var templateResource = new CompositeResourceCollectionWithOverridden(_templates.Select(s => _finder.Find(s)).Where(s => s != null)))
+            {
+                if (templateResource.IsEmpty)
+                {
+                    Logger.Log(LogLevel.Warning, $"No template resource found for [{_templates.ToDelimitedString()}].");
+                }
+                else
+                {
+                    Logger.Log(LogLevel.Verbose, "Template resource found, starting applying template.");
+                    using (var processor = new TemplateProcessor(templateResource))
+                    {
+                        processor.Process(context, outputDirectory);
+                    }
+                }
+            }
+        }
+
+        private void ProcessTheme(string outputDirectory, bool overwrite)
+        {
+
+            using (var themeResources = new CompositeResourceCollectionWithOverridden(_themes.Select(s => _finder.Find(s)).Where(s => s != null)))
+            {
+
+                if (themeResources.IsEmpty)
+                {
+                    Logger.Log(LogLevel.Warning, $"No theme resource found for [{_themes.ToDelimitedString()}].");
+                }
+                else
+                {
+                    Logger.Log(LogLevel.Verbose, "Theme resource found, starting copying theme.");
+                    foreach (var resourceName in themeResources.Names)
+                    {
+                        using (var stream = themeResources.GetResourceStream(resourceName))
+                        {
+                            var outputPath = Path.Combine(outputDirectory, resourceName);
+                            CopyResource(stream, outputPath, overwrite);
+                            Logger.Log(LogLevel.Info, $"Theme resource {resourceName} copied to {outputPath}.");
+                        }
+                    }
+                }
+            }
         }
 
         private static void CopyResource(Stream stream, string filePath, bool overwrite)
@@ -145,12 +194,6 @@ namespace Microsoft.DocAsCode.EntityModel
                 // If the file already exists, skip
                 Logger.Log(LogLevel.Info, $"File {filePath}: {e.Message}, skipped");
             }
-        }
-
-        public void Dispose()
-        {
-            _themeResource?.Dispose();
-            _templateProcessor?.Dispose();
         }
     }
     

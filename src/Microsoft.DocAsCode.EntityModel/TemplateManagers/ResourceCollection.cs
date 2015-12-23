@@ -17,19 +17,23 @@ namespace Microsoft.DocAsCode.EntityModel
         private bool disposed = false;
         public override string Name { get; }
         public override IEnumerable<string> Names { get; }
+        public override bool IsEmpty { get; }
 
         public ArchiveResourceCollection(Stream stream, string name)
         {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+
             _zipped = new ZipArchive(stream);
             Name = name;
             // When Name is empty, entry is folder, ignore
             Names = _zipped.Entries.Where(s => !string.IsNullOrEmpty(s.Name)).Select(s => s.FullName);
+            IsEmpty = !Names.Any();
         }
 
         public override Stream GetResourceStream(string name)
         {
-            // Zip mode
-            if (_zipped == null) return null;
+            if (IsEmpty) return null;
+
             // zip entry is case sensitive
             // incase relative path is combined by backslash \
             return _zipped.GetEntry(name.Trim().ToNormalizedPath())?.Open();
@@ -53,6 +57,7 @@ namespace Microsoft.DocAsCode.EntityModel
         private string _directory = null;
         public override string Name { get; }
         public override IEnumerable<string> Names { get; }
+        public override bool IsEmpty { get; }
 
         public FileResourceCollection(string directory, int maxSearchLevel = 3)
         {
@@ -60,12 +65,12 @@ namespace Microsoft.DocAsCode.EntityModel
             else _directory = directory;
             Name = _directory;
             Names = GetFiles(_directory, "*", maxSearchLevel).Select(s => PathUtility.MakeRelativePath(_directory, s)).Where(s => s != null);
+            IsEmpty = !Names.Any();
         }
 
         public override Stream GetResourceStream(string name)
         {
-            // Directory mode
-            if (_directory == null) return null;
+            if (IsEmpty) return null;
 
             // incase relative path is combined by backslash \
             if (!Names.Contains(name.Trim().ToNormalizedPath(), ResourceComparer)) return null;
@@ -90,20 +95,28 @@ namespace Microsoft.DocAsCode.EntityModel
 
     public sealed class CompositeResourceCollectionWithOverridden : ResourceCollection
     {
-        private ResourceCollection[] _collectionsInOverriddenOrder;
+        private ResourceCollection[] _collectionsInOverriddenOrder = null;
         private bool disposed = false;
         public override string Name => "Composite";
         public override IEnumerable<string> Names { get; }
+        public override bool IsEmpty { get; }
 
-        public CompositeResourceCollectionWithOverridden(ResourceCollection[] collectionsInOverriddenOrder)
+        public CompositeResourceCollectionWithOverridden(IEnumerable<ResourceCollection> collectionsInOverriddenOrder)
         {
-            if (collectionsInOverriddenOrder == null) throw new ArgumentNullException(nameof(collectionsInOverriddenOrder));
-            _collectionsInOverriddenOrder = collectionsInOverriddenOrder;
-            Names = _collectionsInOverriddenOrder.SelectMany(s => s.Names).Distinct();
+            if (collectionsInOverriddenOrder == null || !collectionsInOverriddenOrder.Any())
+            {
+                IsEmpty = true;
+            }
+            else
+            {
+                _collectionsInOverriddenOrder = collectionsInOverriddenOrder.ToArray();
+                Names = _collectionsInOverriddenOrder.SelectMany(s => s.Names).Distinct();
+            }
         }
 
         public override Stream GetResourceStream(string name)
         {
+            if (IsEmpty) return null;
             for (int i = _collectionsInOverriddenOrder.Length - 1; i > -1; i--)
             {
                 var stream = _collectionsInOverriddenOrder[i].GetResourceStream(name);
@@ -120,10 +133,13 @@ namespace Microsoft.DocAsCode.EntityModel
         protected override void Dispose(bool disposing)
         {
             if (disposed) return;
-            for(int i = 0; i< _collectionsInOverriddenOrder.Length; i++)
+            if (_collectionsInOverriddenOrder != null)
             {
-                _collectionsInOverriddenOrder[i].Dispose();
-                _collectionsInOverriddenOrder[i] = null;
+                for (int i = 0; i < _collectionsInOverriddenOrder.Length; i++)
+                {
+                    _collectionsInOverriddenOrder[i].Dispose();
+                    _collectionsInOverriddenOrder[i] = null;
+                }
             }
 
             _collectionsInOverriddenOrder = null;
@@ -136,6 +152,8 @@ namespace Microsoft.DocAsCode.EntityModel
     {
         public abstract string Name { get; }
 
+        public abstract bool IsEmpty { get; }
+
         public abstract IEnumerable<string> Names { get; }
 
         public string GetResource(string name)
@@ -146,15 +164,23 @@ namespace Microsoft.DocAsCode.EntityModel
 
         public IEnumerable<KeyValuePair<string, string>> GetResources(string selector)
         {
+            foreach(var pair in GetResourceStreams(selector))
+            {
+                using (pair.Value)
+                {
+                    yield return new KeyValuePair<string, string>(pair.Key, GetString(pair.Value));
+                }
+            }
+        }
+
+        public IEnumerable<KeyValuePair<string, Stream>> GetResourceStreams(string selector)
+        {
             var regex = new Regex(selector, RegexOptions.IgnoreCase);
             foreach (var name in Names)
             {
                 if (regex.IsMatch(name))
                 {
-                    using (var stream = GetResourceStream(name))
-                    {
-                        yield return new KeyValuePair<string, string>(name, GetString(stream));
-                    }
+                    yield return new KeyValuePair<string, Stream>(name, GetResourceStream(name));
                 }
             }
         }

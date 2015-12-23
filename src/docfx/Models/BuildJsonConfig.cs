@@ -49,6 +49,9 @@ namespace Microsoft.DocAsCode
         [JsonProperty("theme")]
         public ListWithStringFallback Themes { get; set; }
 
+        [JsonProperty("plugin")]
+        public ListWithStringFallback PluginFolders { get; set; }
+
         [JsonProperty("serve")]
         public bool? Serve { get; set; }
 
