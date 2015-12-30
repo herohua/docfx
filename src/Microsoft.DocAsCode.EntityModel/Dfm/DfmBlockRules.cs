@@ -47,7 +47,6 @@ namespace Microsoft.DocAsCode.EntityModel
             {
                 return null;
             }
-            source = source.Substring(match.Length);
 
             // ---
             // a: b
@@ -63,6 +62,7 @@ namespace Microsoft.DocAsCode.EntityModel
                 return null;
             }
 
+            source = source.Substring(match.Length);
             return new DfmYamlHeaderBlockToken(this, value);
         }
     }
