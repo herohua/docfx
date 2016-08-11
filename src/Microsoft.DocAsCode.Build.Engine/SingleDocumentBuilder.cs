@@ -84,7 +84,11 @@ namespace Microsoft.DocAsCode.Build.Engine
                 {
                     using (var processor = parameters.TemplateManager?.GetTemplateProcessor(context, parameters.MaxParallelism) ?? TemplateProcessor.DefaultProcessor)
                     {
-                        var markdownService = CreateMarkdownService(parameters, processor.Tokens.ToImmutableDictionary());
+                        IMarkdownService markdownService;
+                        using (new LoggerPhaseScope("CreateMarkdownService", true))
+                        {
+                            markdownService = CreateMarkdownService(parameters, processor.Tokens.ToImmutableDictionary());
+                        }
 
                         using (new LoggerPhaseScope("Load", true))
                         {
